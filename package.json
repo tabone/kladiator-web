@@ -18,6 +18,8 @@
     "eject": "react-scripts eject"
   },
   "devDependencies": {
-    "ajv": "^6.4.0"
+    "ajv": "^6.4.0",
+    "enzyme": "^3.3.0",
+    "enzyme-adapter-react-16": "^1.1.1"
   }
 }
