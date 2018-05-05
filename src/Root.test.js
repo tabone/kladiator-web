@@ -35,8 +35,7 @@ describe('Root Component', () => {
     })
 
     it('should display the App Component', () => {
-      expect(wrapper.children.length).toBe(1)
-      expect(wrapper.find(App).length).toBe(1)
+      expect(wrapper.is(App)).toBe(true)
     })
   })
 
@@ -57,8 +56,7 @@ describe('Root Component', () => {
     })
 
     it('should display the Loading Component', () => {
-      expect(wrapper.children.length).toBe(1)
-      expect(wrapper.find(Loading).length).toBe(1)
+      expect(wrapper.is(Loading)).toBe(true)
     })
   })
 
@@ -85,8 +83,7 @@ describe('Root Component', () => {
     })
 
     it('should display the Guest Component', () => {
-      expect(wrapper.children.length).toBe(1)
-      expect(wrapper.find(Guest).length).toBe(1)
+      expect(wrapper.is(Guest)).toBe(true)
     })
   })
 
@@ -120,8 +117,7 @@ describe('Root Component', () => {
     })
 
     it('should display the App Component', () => {
-      expect(wrapper.children.length).toBe(1)
-      expect(wrapper.find(App).length).toBe(1)
+      expect(wrapper.is(App)).toBe(true)
     })
   })
 })
