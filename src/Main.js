@@ -1,6 +1,7 @@
 import React, { PureComponent } from 'react'
 import { Provider } from 'react-redux'
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
+import thunk from 'redux-thunk'
 import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles'
 import CssBaseline from 'material-ui/CssBaseline'
 import red from 'material-ui/colors/red'
@@ -12,7 +13,7 @@ import reducers from './reducers/index'
 export default class Main extends PureComponent {
   constructor (props) {
     super(props)
-    this.store = createStore(reducers)
+    this.store = createStore(reducers, applyMiddleware(thunk))
     this.theme = createMuiTheme({
       palette: {
         primary: teal,
