@@ -9,24 +9,23 @@ import purple from 'material-ui/colors/purple'
 import RootContainer from './RootContainer'
 import reducers from './reducers/index'
 
-const theme = createMuiTheme({
-  palette: {
-    primary: teal,
-    secondary: purple,
-    error: red
-  }
-})
-
 export default class Main extends PureComponent {
   constructor (props) {
     super(props)
     this.store = createStore(reducers)
+    this.theme = createMuiTheme({
+      palette: {
+        primary: teal,
+        secondary: purple,
+        error: red
+      }
+    })
   }
 
   render () {
     return (
       <Provider store={this.store}>
-        <MuiThemeProvider theme={theme}>
+        <MuiThemeProvider theme={this.theme}>
           <CssBaseline />
           <React.StrictMode>
             <RootContainer />
