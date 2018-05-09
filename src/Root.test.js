@@ -1,123 +1,132 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import { API_HOSTNAME } from './config'
+import Snackbar from 'material-ui/Snackbar'
 import App from './App'
 import Guest from './Guest'
 import Loading from './Loading'
 import Root from './Root'
 
 describe('Root Component', () => {
-  beforeAll(() => {
-    jest.spyOn(global, 'fetch')
-  })
-
-  afterAll(() => {
-    global.fetch.mockRestore()
-  })
-
-  afterEach(() => {
-    global.fetch.mockReset()
-  })
-
-  describe('Rendering the Root Component when the user is authenticated', () => {
+  describe('Rendering the component when the user is authenticated', () => {
     let wrapper = null
+    let login = null
 
     beforeEach(() => {
-      global.fetch.mockImplementation(() => {
-        return new Promise((resolve, reject) => {})
-      })
+      login = jest.fn().mockImplementation(() => Promise.resolve())
+      wrapper = shallow(<Root isLoggedIn={true} login={login} />)
+    })
 
-      wrapper = shallow(<Root isLoggedIn={true} login={() => {}}/>)
+    it('should display the App component', () => {
+      expect(wrapper.find(App).length).toBe(1)
+      expect(wrapper.find(Guest).length).toBe(0)
+      expect(wrapper.find(Loading).length).toBe(0)
     })
 
     it('should not attempt to authenticate the user', () => {
-      expect(global.fetch).toHaveBeenCalledTimes(0)
-    })
-
-    it('should display the App Component', () => {
-      expect(wrapper.is(App)).toBe(true)
+      expect(login).not.toHaveBeenCalled()
     })
   })
 
-  describe('Rendering the Root Component when the user is not authenticated', () => {
+  describe('Rendering the component when the user is not authenticated', () => {
     let wrapper = null
+    let login = null
 
     beforeEach(() => {
-      global.fetch.mockImplementation(() => {
+      // Mock the login function to return a unresolved promise.
+      login = jest.fn().mockImplementation(() => {
         return new Promise((resolve, reject) => {})
       })
 
-      wrapper = shallow(<Root isLoggedIn={false} login={() => {}}/>)
+      wrapper = shallow(<Root isLoggedIn={false} login={login} />)
+    })
+
+    it('should display the Loading component', () => {
+      expect(wrapper.find(App).length).toBe(0)
+      expect(wrapper.find(Guest).length).toBe(0)
+      expect(wrapper.find(Loading).length).toBe(1)
     })
 
     it('should attempt to authenticate the user', () => {
-      expect(global.fetch).toHaveBeenCalledTimes(1)
-      expect(global.fetch).toHaveBeenCalledWith(`${API_HOSTNAME}/me`)
-    })
-
-    it('should display the Loading Component', () => {
-      expect(wrapper.is(Loading)).toBe(true)
+      expect(login).toHaveBeenCalledTimes(1)
     })
   })
 
-  describe('Unsuccessful Authentication', () => {
-    let login = null
+  describe('Successful authentication', () => {
     let wrapper = null
+    let login = null
 
     beforeEach(() => {
-      login = jest.fn()
-
-      global.fetch.mockImplementation(() => {
-        return new Promise((resolve, reject) => resolve({ status: 401 }))
-      })
-
+      login = jest.fn().mockImplementation(() => Promise.resolve())
       wrapper = shallow(<Root isLoggedIn={false} login={login} />)
 
       return wrapper.instance()._.promises.authenticateUser.then(() => {
-        wrapper.update()
-      })
-    })
-
-    it('should not invoke the login prop function', () => {
-      expect(login).toHaveBeenCalledTimes(0)
-    })
-
-    it('should display the Guest Component', () => {
-      expect(wrapper.is(Guest)).toBe(true)
-    })
-  })
-
-  describe('Successful Authentication', () => {
-    let user = null
-    let login = null
-    let wrapper = null
-
-    beforeEach(() => {
-      user = { id: 1 }
-      const response = { status: 200, json: () => user }
-      login = jest.fn()
-
-      global.fetch.mockImplementation(() => {
-        return new Promise((resolve, reject) => resolve(response))
-      })
-
-      wrapper = shallow(<Root isLoggedIn={false} login={login} />)
-
-      return wrapper.instance()._.promises.authenticateUser.then(() => {
-        // Update prop that is expected to be updated by the container component
-        // once the user logs in.
+        // Update prop that the container component should update when the user
+        // is successfully authenticated.
         wrapper.setProps({ isLoggedIn: true })
         wrapper.update()
       })
     })
 
-    it('should invoke the login prop function with the user info', () => {
-      expect(login).toHaveBeenCalledTimes(1)
-      expect(login).toHaveBeenCalledWith(user)
+    it('should display the App Component', () => {
+      expect(wrapper.find(App).length).toBe(1)
+      expect(wrapper.find(Guest).length).toBe(0)
+      expect(wrapper.find(Loading).length).toBe(0)
     })
 
-    it('should display the App Component', () => {
-      expect(wrapper.is(App)).toBe(true)
+    it('should not display the Snackbar', () => {
+      expect(wrapper.find(Snackbar).props().open).toBe(false)
+    })
+  })
+
+  describe('Unsuccessful authentication', () => {
+    let wrapper = null
+    let login = null
+
+    beforeEach(() => {
+      login = jest.fn().mockImplementation(() => {
+        return Promise.reject(new Error('woops'))
+      })
+
+      wrapper = shallow(<Root isLoggedIn={false} login={login} />)
+
+      return wrapper.instance()._.promises.authenticateUser.then(() => {
+        // Unlike the successful authentication test case the prop that should
+        // be updated when the user is successfully authenticate, is not
+        // updated.
+        wrapper.update()
+      })
+    })
+
+    it('should display the Guest Component', () => {
+      expect(wrapper.find(App).length).toBe(0)
+      expect(wrapper.find(Guest).length).toBe(1)
+      expect(wrapper.find(Loading).length).toBe(0)
+    })
+
+    it('should display the Snackbar informing the user about the error', () => {
+      expect(wrapper.find(Snackbar).props().open).toBe(true)
+    })
+  })
+
+  describe('Closing the Snackbar displaying the error', () => {
+    let wrapper = null
+    let login = null
+
+    beforeEach(() => {
+      login = jest.fn().mockImplementation(() => {
+        return Promise.reject(new Error('woops'))
+      })
+
+      wrapper = shallow(<Root isLoggedIn={false} login={login} />)
+
+      return wrapper.instance()._.promises.authenticateUser.then(() => {
+        wrapper.instance().handleSnackBarClose()
+        wrapper.update()
+      })
+    })
+
+    it('should hide the Snackbar', () => {
+      expect(wrapper.find(Snackbar).props().open).toBe(false)
     })
   })
 })
