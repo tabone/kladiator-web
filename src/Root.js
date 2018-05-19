@@ -2,6 +2,7 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import Button from 'material-ui/Button'
 import Snackbar from 'material-ui/Snackbar'
+import { AuthError } from './thunks/login'
 import Loading from './Loading'
 import Guest from './Guest'
 import App from './App'
@@ -17,9 +18,7 @@ export default class Root extends PureComponent {
 
     this.handleSnackBarClose = this.handleSnackBarClose.bind(this)
 
-    this._ = {
-      promises: { authenticateUser: null }
-    }
+    this._ = { promises: { authenticateUser: null } }
   }
 
   componentDidMount () {
@@ -30,12 +29,12 @@ export default class Root extends PureComponent {
   }
 
   render () {
-    const component = (this.state.showLoading === true) ? <Loading />
-      : (this.props.isLoggedIn === true) ? <App /> : <Guest />
+    if (this.state.showLoading === true) return <div><Loading /></div>
+    if (this.props.isLoggedIn === true) return <div><App /></div>
 
     return (
       <div>
-        {component}
+        <Guest />
 
         <Snackbar
           open={this.state.authenticationError !== null}
@@ -57,14 +56,12 @@ export default class Root extends PureComponent {
   }
 
   login () {
-    return this.props.login().then(() => {
-      this.setState({ showLoading: false })
-    }).catch(err => {
-      this.setState({
-        showLoading: false,
-        authenticationError: 'An error occurred during authentication',
-      })
-    })
+    const newState = { showLoading: false }
+
+    return this.props.login().catch(err => {
+      if (err instanceof AuthError) return
+      newState.authenticationError = 'An error occurred during authentication'
+    }).then(() => this.setState(newState))
   }
 
   handleSnackBarClose () {
