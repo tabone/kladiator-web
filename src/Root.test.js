@@ -1,6 +1,6 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import Snackbar from 'material-ui/Snackbar'
+import Snackbar from '@material-ui/core/Snackbar'
 import { AuthError, ServerError } from './thunks/login'
 import App from './App'
 import Guest from './Guest'
