@@ -1,22 +1,25 @@
 import React from 'react'
-import { createStore } from 'redux'
 import { shallow } from 'enzyme'
+import thunk from 'redux-thunk'
+import configureStore from 'redux-mock-store'
 import { Map } from 'immutable'
+import loginThunk from './thunks/login'
 import RootContainer from './RootContainer'
-import reducers from './reducers/index'
-import { loginSession } from './actions/session'
 
-describe('RootContainer Component', () => {
-  let store = null
+const mockStore = configureStore([ thunk ])
 
-  beforeEach(() => {
-    store = createStore(reducers)
+jest.mock('./thunks/login', () => {
+  return jest.fn().mockImplementation((...args) => {
+    return { type: 'loginThunk', args }
   })
+})
 
-  describe('Rendering Component when user is logged out', () => {
+describe('Root Container Component', () => {
+  describe('Rendering component when user is not logged in', () => {
     let wrapper = null
 
     beforeEach(() => {
+      const store = mockStore({ session: Map({ userID: null }) })
       wrapper = shallow(<RootContainer />, { context: { store } })
     })
 
@@ -25,37 +28,35 @@ describe('RootContainer Component', () => {
     })
   })
 
-  describe('Rendering Component when user is logged in', () => {
-    let user = null
+  describe('Rendering component when user is logged in', () => {
     let wrapper = null
 
     beforeEach(() => {
-      user = { id: 1, username: 'lucat' }
-      store.dispatch(loginSession(user))
+      const store = mockStore({ session: Map({ userID: 1 }) })
       wrapper = shallow(<RootContainer />, { context: { store } })
     })
 
-    it('should set the isLoggedIn prop to true', () => {
+    it('should set the isLoggedIn prop to false', () => {
       expect(wrapper.props().isLoggedIn).toBe(true)
     })
   })
 
-  describe('Logging in the user', () => {
-    let user = null
+  describe('Authenticating the user', () => {
+    let store = null
     let wrapper = null
 
     beforeEach(() => {
-      user = { id: 1, username: 'lucat'}
+      store = mockStore({ session: Map({ userID: 1 }) })
       wrapper = shallow(<RootContainer />, { context: { store } })
-      wrapper.props().login(user)
+      wrapper.props().login()
     })
 
-    it('should store the user ID in the session namespace in the store', () => {
-      expect(store.getState().session.get('userID')).toBe(user.id)
-    })
+    it('should invoke the login thunk', () => {
+      expect(store.getActions().length).toBe(1)
 
-    it('should add the user in the user namespace in the store', () => {
-      expect(store.getState().user.get(user.id).equals(Map(user))).toBe(true)
+      const action = store.getActions()[0]
+      expect(action.type).toBe('loginThunk')
+      expect(action.args.length).toBe(0)
     })
   })
 })
