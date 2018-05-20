@@ -7,6 +7,16 @@ import { USER_ADD } from '../actions/user'
 import { SESSION_LOGIN } from '../actions/session'
 import { AuthError, ServerError, default as login } from './login'
 
+jest.mock('../actions/user', () => mockActionCreators('addUser'))
+jest.mock('../actions/session', () => mockActionCreators('loginSession'))
+
+function mockActionCreators (...actionCreators) {
+  return actionCreators.reduce((module, actionCreator) => {
+    module[actionCreator] = (...args) => ({ type: actionCreator, args })
+    return module
+  }, {})
+}
+
 const mockStore = configureStore([ thunk ])
 
 describe('Login Thunk', () => {
@@ -66,13 +76,15 @@ describe('Login Thunk', () => {
     })
 
     it('should dispatch a USER_ADD action to store the user info', () => {
-      expect(store.getActions()[0].type).toEqual(USER_ADD)
-      expect(store.getActions()[0].data.equals(Map(user))).toEqual(true)
+      const action = store.getActions()[0]
+      expect(action.type).toBe('addUser')
+      expect(action.args).toEqual([ user ])
     })
 
     it('should dispatch a SESSION_LOGIN action to authenticate the user', () => {
-      expect(store.getActions()[1].type).toEqual(SESSION_LOGIN)
-      expect(store.getActions()[1].data.equals(Map(user))).toEqual(true)
+      const action = store.getActions()[1]
+      expect(action.type).toBe('loginSession')
+      expect(action.args).toEqual([ user ])
     })
   })
 
@@ -93,7 +105,7 @@ describe('Login Thunk', () => {
       })
     })
 
-    it('should return a promise rejected the expected error object containing info about the HTTP Status', () => {
+    it('should return a promise rejected the authentication error object containing info about the HTTP Status', () => {
       expect(error instanceof AuthError).toBe(true)
       expect(error.message).toBe(String(status))
     })
@@ -120,7 +132,7 @@ describe('Login Thunk', () => {
       })
     })
 
-    it('should return a promise rejected the expected error object containing info about the HTTP Status', () => {
+    it('should return a promise rejected the server error object containing info about the HTTP Status', () => {
       expect(error instanceof ServerError).toBe(true)
       expect(error.message).toBe(String(status))
     })
