@@ -36,7 +36,7 @@ describe('Root Container Component', () => {
       wrapper = shallow(<RootContainer />, { context: { store } })
     })
 
-    it('should set the isLoggedIn prop to false', () => {
+    it('should set the isLoggedIn prop to true', () => {
       expect(wrapper.props().isLoggedIn).toBe(true)
     })
   })
