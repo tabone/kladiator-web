@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
-import { addUser } from './actions/user'
-import { loginSession } from './actions/session'
+import { bindActionCreators } from 'redux'
+import login from './thunks/login'
 import Root from './Root'
 
 function mapStateToProps (state) {
@@ -8,12 +8,7 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return {
-    login (user) {
-      dispatch(addUser(user))
-      dispatch(loginSession(user))
-    }
-  }
+  return bindActionCreators({ login }, dispatch)
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Root)
