@@ -2,13 +2,16 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import TextField from '@material-ui/core/TextField'
 
+export const VALIDITY_VALID = Symbol('VALIDITY_VALID')
+const VALIDITY_UNKNOWN = Symbol('VALIDITY_UNKNOWN')
+
 export default class ValidationTextField extends PureComponent {
   constructor (props) {
     super(props)
 
     this.state = {
       didBlur: false,
-      errorMessage: null
+      errorMessage: VALIDITY_UNKNOWN
     }
 
     this.onBlur = this.onBlur.bind(this)
@@ -16,14 +19,22 @@ export default class ValidationTextField extends PureComponent {
   }
 
   render () {
-    const { onBlur, onChange, helperText, error, ...props } = this.props
+    const {
+      error,
+      onBlur,
+      onChange,
+      helperText,
+      validation,
+      onValidityChange,
+      ...props
+    } = this.props
 
     return (
       <TextField {...props}
         onBlur={this.onBlur}
         onChange={this.onChange}
-        helperText={this.state.errorMessage}
-        error={this.isTextFieldValid() === false} />
+        error={this.isTextFieldInvalid()}
+        helperText={this.getErrorMessage()} />
     )
   }
 
@@ -41,12 +52,19 @@ export default class ValidationTextField extends PureComponent {
     if (this.props.onChange != null) this.props.onChange(e, ...args)
   }
 
-  isTextFieldValid () {
-    return this.isErrorMessageValid(this.state.errorMessage)
+  isTextFieldInvalid () {
+    return this.isErrorMessageInvalid(this.state.errorMessage)
   }
 
-  isErrorMessageValid (message) {
-    return message === null
+  isErrorMessageInvalid (message) {
+    return message !== VALIDITY_VALID && message !== VALIDITY_UNKNOWN
+  }
+
+  getErrorMessage () {
+    const { errorMessage } = this.state
+    return this.isErrorMessageInvalid(errorMessage) === false
+      ? null
+      : errorMessage
   }
 
   validate (value) {
@@ -55,8 +73,9 @@ export default class ValidationTextField extends PureComponent {
 
     if (this.props.onValidityChange != null) {
       const isErrorMessageChanging = errorMessage !== newErrorMessage
-      const wasTextFieldValid = this.isTextFieldValid()
-      const isTextFieldValid = this.isErrorMessageValid(newErrorMessage)
+      const wasTextFieldValid = this.isTextFieldInvalid() === false
+      const isTextFieldValid =
+        this.isErrorMessageInvalid(newErrorMessage) === false
 
       if (isErrorMessageChanging && (isTextFieldValid || wasTextFieldValid)) {
         this.props.onValidityChange(isTextFieldValid)

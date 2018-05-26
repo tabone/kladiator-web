@@ -1,7 +1,10 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Textfield from '@material-ui/core/Textfield'
-import ValidationTextField from './ValidationTextField'
+import {
+  VALIDITY_VALID,
+  default as ValidationTextField
+} from './ValidationTextField'
 
 describe('ValidationTextField Component', () => {
   describe('Blurring for the first time', () => {
@@ -146,7 +149,7 @@ describe('ValidationTextField Component', () => {
 
       onValidityChange = jest.fn()
       const validation = jest.fn()
-        .mockReturnValueOnce(null)
+        .mockReturnValueOnce(VALIDITY_VALID)
         .mockReturnValueOnce(errorMessage)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
@@ -188,7 +191,7 @@ describe('ValidationTextField Component', () => {
       onValidityChange = jest.fn()
       const validation = jest.fn()
         .mockReturnValueOnce(errorMessage)
-        .mockReturnValueOnce(null)
+        .mockReturnValueOnce(VALIDITY_VALID)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
@@ -216,7 +219,41 @@ describe('ValidationTextField Component', () => {
     })
   })
 
+  describe('Bluring for the first time on a textfield having a valid value', () => {
+    let wrapper = null
+    let onValidityChange = null
+
+    beforeEach(() => {
+      const textfieldValue = 'textfield-value'
+
+      onValidityChange = jest.fn()
+      const validation = jest.fn().mockReturnValueOnce(VALIDITY_VALID)
+
+      wrapper = shallow(<ValidationTextField value={textfieldValue}
+        validation={validation}
+        onValidityChange={onValidityChange} />)
+
+      wrapper.props().onBlur()
+      wrapper.update()
+    })
+
+    it('should not display the error message', () => {
+      expect(wrapper.props().helperText).toBe(null)
+    })
+
+    it('should not mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(false)
+    })
+
+    it('should invoke the onValidityChange prop indicating that the value is valid', () => {
+      const validationCalls = onValidityChange.mock.calls
+      expect(validationCalls.length).toBe(1)
+      expect(validationCalls[0][0]).toBe(true)
+    })
+  })
+
   describe('Changing a valid textfield value without invalidating it', () => {
+    let wrapper = null
     let onValidityChange = null
 
     beforeEach(() => {
@@ -225,10 +262,10 @@ describe('ValidationTextField Component', () => {
 
       onValidityChange = jest.fn()
       const validation = jest.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(null)
+        .mockReturnValueOnce(VALIDITY_VALID)
+        .mockReturnValueOnce(VALIDITY_VALID)
 
-      const wrapper = shallow(<ValidationTextField value={textfieldValue}
+      wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
         onValidityChange={onValidityChange} />)
 
@@ -237,6 +274,14 @@ describe('ValidationTextField Component', () => {
       wrapper.update()
       wrapper.props().onChange(onChangeEvent)
       wrapper.update()
+    })
+
+    it('should not display the error message', () => {
+      expect(wrapper.props().helperText).toBe(null)
+    })
+
+    it('should not mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(false)
     })
 
     it('should not invoke the onValidityChange prop', () => {
@@ -245,10 +290,12 @@ describe('ValidationTextField Component', () => {
   })
 
   describe('Changing an invalid textfield value without fixing it', () => {
+    let wrapper = null
+    let errorMessage = null
     let onValidityChange = null
 
     beforeEach(() => {
-      const errorMessage = 'error-message'
+      errorMessage = 'error-message'
       const textfieldValue = 'textfield-value'
       const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
 
@@ -257,7 +304,7 @@ describe('ValidationTextField Component', () => {
         .mockReturnValueOnce(errorMessage)
         .mockReturnValueOnce(errorMessage)
 
-      const wrapper = shallow(<ValidationTextField value={textfieldValue}
+      wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
         onValidityChange={onValidityChange} />)
 
@@ -266,6 +313,14 @@ describe('ValidationTextField Component', () => {
       wrapper.update()
       wrapper.props().onChange(onChangeEvent)
       wrapper.update()
+    })
+
+    it('should display the error message', () => {
+      expect(wrapper.props().helperText).toBe(errorMessage)
+    })
+
+    it('should mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(true)
     })
 
     it('should not invoke the onValidityChange prop', () => {
@@ -274,18 +329,21 @@ describe('ValidationTextField Component', () => {
   })
 
   describe('Changing an invalid textfield value to fix the current problem but fail on another criteria', () => {
+    let wrapper = null
+    let errorMessage = null
     let onValidityChange = null
 
     beforeEach(() => {
+      errorMessage = 'error-message'
       const textfieldValue = 'textfield-value'
       const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
 
       onValidityChange = jest.fn()
       const validation = jest.fn()
-        .mockReturnValueOnce('error-message-one')
-        .mockReturnValueOnce('error-message-two')
+        .mockReturnValueOnce(`${errorMessage}-first`)
+        .mockReturnValueOnce(errorMessage)
 
-      const wrapper = shallow(<ValidationTextField value={textfieldValue}
+      wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
         onValidityChange={onValidityChange} />)
 
@@ -294,6 +352,14 @@ describe('ValidationTextField Component', () => {
       wrapper.update()
       wrapper.props().onChange(onChangeEvent)
       wrapper.update()
+    })
+
+    it('should display the last error message', () => {
+      expect(wrapper.props().helperText).toBe(errorMessage)
+    })
+
+    it('should mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(true)
     })
 
     it('should not invoke the onValidityChange prop', () => {
