@@ -1,10 +1,7 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Textfield from '@material-ui/core/Textfield'
-import {
-  VALIDITY_VALID,
-  default as ValidationTextField
-} from './ValidationTextField'
+import ValidationTextField from './ValidationTextField'
 
 describe('ValidationTextField Component', () => {
   describe('Blurring for the first time', () => {
@@ -149,7 +146,7 @@ describe('ValidationTextField Component', () => {
 
       onValidityChange = jest.fn()
       const validation = jest.fn()
-        .mockReturnValueOnce(VALIDITY_VALID)
+        .mockReturnValueOnce(null)
         .mockReturnValueOnce(errorMessage)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
@@ -191,7 +188,7 @@ describe('ValidationTextField Component', () => {
       onValidityChange = jest.fn()
       const validation = jest.fn()
         .mockReturnValueOnce(errorMessage)
-        .mockReturnValueOnce(VALIDITY_VALID)
+        .mockReturnValueOnce(null)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
@@ -227,7 +224,7 @@ describe('ValidationTextField Component', () => {
       const textfieldValue = 'textfield-value'
 
       onValidityChange = jest.fn()
-      const validation = jest.fn().mockReturnValueOnce(VALIDITY_VALID)
+      const validation = jest.fn().mockReturnValueOnce(null)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
@@ -262,8 +259,8 @@ describe('ValidationTextField Component', () => {
 
       onValidityChange = jest.fn()
       const validation = jest.fn()
-        .mockReturnValueOnce(VALIDITY_VALID)
-        .mockReturnValueOnce(VALIDITY_VALID)
+        .mockReturnValueOnce(null)
+        .mockReturnValueOnce(null)
 
       wrapper = shallow(<ValidationTextField value={textfieldValue}
         validation={validation}
