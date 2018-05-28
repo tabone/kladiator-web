@@ -1,25 +1,28 @@
 import React from 'react'
 import { shallow } from 'enzyme'
 import Textfield from '@material-ui/core/Textfield'
-import ValidationTextField from './ValidationTextField'
+import {
+  VALIDITY_VALID,
+  default as ValidationTextField
+} from './ValidationTextField'
 
 describe('ValidationTextField Component', () => {
   describe('Blurring for the first time', () => {
+    let value = null
     let onBlur = null
-    let validation = null
     let onBlurEvent = null
-    let textfieldValue = null
+    let onValidation = null
 
     beforeEach(() => {
       onBlurEvent = {}
-      textfieldValue = 'textfield-value'
-
       onBlur = jest.fn()
-      validation = jest.fn()
+      onValidation = jest.fn()
+      value = 'textfield value'
 
-      const wrapper = shallow(<ValidationTextField onBlur={onBlur}
-        value={textfieldValue}
-        validation={validation}/>)
+      const wrapper = shallow(<ValidationTextField
+        value={value}
+        onBlur={onBlur}
+        onValidation={onValidation} />)
 
       wrapper.props().onBlur(onBlurEvent)
     })
@@ -31,31 +34,29 @@ describe('ValidationTextField Component', () => {
     })
 
     it('should validate the textfield value', () => {
-      const validationCalls = validation.mock.calls
-      expect(validationCalls.length).toBe(1)
-      expect(validationCalls[0][0]).toBe(textfieldValue)
+      const onValidationCalls = onValidation.mock.calls
+      expect(onValidationCalls.length).toBe(1)
+      expect(onValidationCalls[0][0]).toBe(value)
     })
   })
 
   describe('Blurring after the first blur', () => {
     let onBlur = null
-    let validation = null
     let onBlurEvent = null
+    let onValidation = null
 
     beforeEach(() => {
       onBlurEvent = {}
-      const textfieldValue = 'textfield-value'
-
       onBlur = jest.fn()
-      validation = jest.fn()
+      onValidation = jest.fn()
 
-      const wrapper = shallow(<ValidationTextField onBlur={onBlur}
-        value={textfieldValue}
-        validation={validation}/>)
+      const wrapper = shallow(<ValidationTextField
+        onBlur={onBlur}
+        onValidation={onValidation} />)
 
       wrapper.props().onBlur()
       onBlur.mockClear()
-      validation.mockClear()
+      onValidation.mockClear()
       wrapper.props().onBlur(onBlurEvent)
     })
 
@@ -66,25 +67,23 @@ describe('ValidationTextField Component', () => {
     })
 
     it('should not validate the textfield value', () => {
-      expect(validation.mock.calls.length).toBe(0)
+      expect(onValidation.mock.calls.length).toBe(0)
     })
   })
 
-  describe('Changing the value of the textfield before the first blur', () => {
+  describe('Changing the textfield value before the first blur', () => {
     let onChange = null
-    let validation = null
+    let onValidation = null
     let onChangeEvent = null
 
     beforeEach(() => {
-      const textfieldValue = 'textfield-value'
-      onChangeEvent = { target: { value: `${textfieldValue}-new` } }
-
       onChange = jest.fn()
-      validation = jest.fn()
+      onValidation = jest.fn()
+      onChangeEvent = { target: { value: 'new-textfield-value' } }
 
-      const wrapper = shallow(<ValidationTextField onChange={onChange}
-        value={textfieldValue}
-        validation={validation} />)
+      const wrapper = shallow(<ValidationTextField
+        onChange={onChange}
+        onValidation={onValidation} />)
 
       wrapper.props().onChange(onChangeEvent)
     })
@@ -96,28 +95,26 @@ describe('ValidationTextField Component', () => {
     })
 
     it('should not validate the new textfield value', () => {
-      expect(validation.mock.calls.length).toBe(0)
+      expect(onValidation.mock.calls.length).toBe(0)
     })
   })
 
-  describe('Changing the value of the textfield after the first blur', () => {
+  describe('Changing the textfield value after the first blur', () => {
     let onChange = null
-    let validation = null
+    let onValidation = null
     let onChangeEvent = null
 
     beforeEach(() => {
-      const textfieldValue = 'textfield-value'
-      onChangeEvent = { target: { value: `${textfieldValue}-new` } }
-
       onChange = jest.fn()
-      validation = jest.fn()
+      onValidation = jest.fn()
+      onChangeEvent = { target: { value: 'new-textfield-value' } }
 
-      const wrapper = shallow(<ValidationTextField onChange={onChange}
-        value={textfieldValue}
-        validation={validation} />)
+      const wrapper = shallow(<ValidationTextField
+        onChange={onChange}
+        onValidation={onValidation} />)
 
       wrapper.props().onBlur()
-      validation.mockClear()
+      onValidation.mockClear()
       wrapper.props().onChange(onChangeEvent)
     })
 
@@ -128,77 +125,26 @@ describe('ValidationTextField Component', () => {
     })
 
     it('should validate the new textfield value', () => {
-      const validationCalls = validation.mock.calls
-      expect(validationCalls.length).toBe(1)
-      expect(validationCalls[0][0]).toBe(onChangeEvent.target.value)
-    })
-  })
-
-  describe('Invalidating a textfield value', () => {
-    let wrapper = null
-    let errorMessage = null
-    let onValidityChange = null
-
-    beforeEach(() => {
-      errorMessage = 'error-message'
-      const textfieldValue = 'textfield-value'
-      const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
-
-      onValidityChange = jest.fn()
-      const validation = jest.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(errorMessage)
-
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
-        onValidityChange={onValidityChange} />)
-
-      wrapper.props().onBlur()
-      onValidityChange.mockClear()
-      wrapper.update()
-      wrapper.props().onChange(onChangeEvent)
-      wrapper.update()
-    })
-
-    it('should display the error message', () => {
-      expect(wrapper.props().helperText).toBe(errorMessage)
-    })
-
-    it('should mark the textfield as invalid', () => {
-      expect(wrapper.props().error).toBe(true)
-    })
-
-    it('should invoke the onValidityChange prop indicating that the value has been invalidated', () => {
-      const onValidityChangeCalls = onValidityChange.mock.calls
-      expect(onValidityChangeCalls.length).toBe(1)
-      expect(onValidityChangeCalls[0][0]).toBe(false)
+      const onValidationCalls = onValidation.mock.calls
+      expect(onValidationCalls.length).toBe(1)
+      expect(onValidationCalls[0][0]).toBe(onChangeEvent.target.value)
     })
   })
 
   describe('Fixing an invalid textfield value', () => {
     let wrapper = null
-    let errorMessage = null
     let onValidityChange = null
 
     beforeEach(() => {
-      errorMessage = 'error-message'
-      const textfieldValue = 'textfield-value'
-      const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
-
       onValidityChange = jest.fn()
-      const validation = jest.fn()
-        .mockReturnValueOnce(errorMessage)
-        .mockReturnValueOnce(null)
 
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
+      wrapper = shallow(<ValidationTextField
+        onValidation={()=>{}}
         onValidityChange={onValidityChange} />)
 
-      wrapper.props().onBlur()
+      wrapper.setProps({ helperText: 'error-message' })
       onValidityChange.mockClear()
-      wrapper.update()
-      wrapper.props().onChange(onChangeEvent)
-      wrapper.update()
+      wrapper.setProps({ helperText: VALIDITY_VALID })
     })
 
     it('should remove the error message', () => {
@@ -216,36 +162,36 @@ describe('ValidationTextField Component', () => {
     })
   })
 
-  describe('Bluring for the first time on a textfield having a valid value', () => {
+  describe('Invalidating a valid textfield value', () => {
     let wrapper = null
+    let helperText = null
     let onValidityChange = null
 
     beforeEach(() => {
-      const textfieldValue = 'textfield-value'
-
       onValidityChange = jest.fn()
-      const validation = jest.fn().mockReturnValueOnce(null)
+      helperText = 'error-message'
 
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
+      wrapper = shallow(<ValidationTextField
+        onValidation={()=>{}}
         onValidityChange={onValidityChange} />)
 
-      wrapper.props().onBlur()
-      wrapper.update()
+      wrapper.setProps({ helperText: VALIDITY_VALID })
+      onValidityChange.mockClear()
+      wrapper.setProps({ helperText })
     })
 
-    it('should not display the error message', () => {
-      expect(wrapper.props().helperText).toBe(null)
+    it('should display the error message', () => {
+      expect(wrapper.props().helperText).toBe(helperText)
     })
 
-    it('should not mark the textfield as invalid', () => {
-      expect(wrapper.props().error).toBe(false)
+    it('should mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(true)
     })
 
-    it('should invoke the onValidityChange prop indicating that the value is valid', () => {
-      const validationCalls = onValidityChange.mock.calls
-      expect(validationCalls.length).toBe(1)
-      expect(validationCalls[0][0]).toBe(true)
+    it('should invoke the onValidityChange prop indicating that the value has been invalidated', () => {
+      const onValidityChangeCalls = onValidityChange.mock.calls
+      expect(onValidityChangeCalls.length).toBe(1)
+      expect(onValidityChangeCalls[0][0]).toBe(false)
     })
   })
 
@@ -254,23 +200,15 @@ describe('ValidationTextField Component', () => {
     let onValidityChange = null
 
     beforeEach(() => {
-      const textfieldValue = 'textfield-value'
-      const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
-
       onValidityChange = jest.fn()
-      const validation = jest.fn()
-        .mockReturnValueOnce(null)
-        .mockReturnValueOnce(null)
 
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
+      wrapper = shallow(<ValidationTextField
+        onValidation={()=>{}}
         onValidityChange={onValidityChange} />)
 
-      wrapper.props().onBlur()
+      wrapper.setProps({ helperText: VALIDITY_VALID })
       onValidityChange.mockClear()
-      wrapper.update()
-      wrapper.props().onChange(onChangeEvent)
-      wrapper.update()
+      wrapper.setProps({ helperText: VALIDITY_VALID })
     })
 
     it('should not display the error message', () => {
@@ -288,32 +226,24 @@ describe('ValidationTextField Component', () => {
 
   describe('Changing an invalid textfield value without fixing it', () => {
     let wrapper = null
-    let errorMessage = null
+    let helperText = null
     let onValidityChange = null
 
     beforeEach(() => {
-      errorMessage = 'error-message'
-      const textfieldValue = 'textfield-value'
-      const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
-
       onValidityChange = jest.fn()
-      const validation = jest.fn()
-        .mockReturnValueOnce(errorMessage)
-        .mockReturnValueOnce(errorMessage)
+      helperText = 'error-message'
 
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
+      wrapper = shallow(<ValidationTextField
+        onValidation={()=>{}}
         onValidityChange={onValidityChange} />)
 
-      wrapper.props().onBlur()
+      wrapper.setProps({ helperText })
       onValidityChange.mockClear()
-      wrapper.update()
-      wrapper.props().onChange(onChangeEvent)
-      wrapper.update()
+      wrapper.setProps({ helperText })
     })
 
     it('should display the error message', () => {
-      expect(wrapper.props().helperText).toBe(errorMessage)
+      expect(wrapper.props().helperText).toBe(helperText)
     })
 
     it('should mark the textfield as invalid', () => {
@@ -327,32 +257,24 @@ describe('ValidationTextField Component', () => {
 
   describe('Changing an invalid textfield value to fix the current problem but fail on another criteria', () => {
     let wrapper = null
-    let errorMessage = null
+    let helperText = null
     let onValidityChange = null
 
     beforeEach(() => {
-      errorMessage = 'error-message'
-      const textfieldValue = 'textfield-value'
-      const onChangeEvent = { target: { value: `${textfieldValue}-new` }}
-
       onValidityChange = jest.fn()
-      const validation = jest.fn()
-        .mockReturnValueOnce(`${errorMessage}-first`)
-        .mockReturnValueOnce(errorMessage)
+      helperText = 'error-message'
 
-      wrapper = shallow(<ValidationTextField value={textfieldValue}
-        validation={validation}
+      wrapper = shallow(<ValidationTextField
+        onValidation={()=>{}}
         onValidityChange={onValidityChange} />)
 
-      wrapper.props().onBlur()
+      wrapper.setProps({ helperText: `${helperText}-old` })
       onValidityChange.mockClear()
-      wrapper.update()
-      wrapper.props().onChange(onChangeEvent)
-      wrapper.update()
+      wrapper.setProps({ helperText })
     })
 
-    it('should display the last error message', () => {
-      expect(wrapper.props().helperText).toBe(errorMessage)
+    it('should display the latest error message', () => {
+      expect(wrapper.props().helperText).toBe(helperText)
     })
 
     it('should mark the textfield as invalid', () => {
@@ -361,6 +283,68 @@ describe('ValidationTextField Component', () => {
 
     it('should not invoke the onValidityChange prop', () => {
       expect(onValidityChange.mock.calls.length).toBe(0)
+    })
+  })
+
+  describe('Validating a valid unvalidated textfield value', () => {
+    let wrapper = null
+    let onValidityChange = null
+
+    beforeEach(() => {
+      onValidityChange = jest.fn()
+
+      wrapper = shallow(<ValidationTextField
+        helperText={null}
+        onValidation={()=>{}}
+        onValidityChange={onValidityChange} />)
+
+      wrapper.setProps({ helperText: VALIDITY_VALID })
+    })
+
+    it('should not display the error message', () => {
+      expect(wrapper.props().helperText).toBe(null)
+    })
+
+    it('should not mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(false)
+    })
+
+    it('should invoke the onValidityChange prop indicating that the value is valid', () => {
+      const onValidityChangeCalls = onValidityChange.mock.calls
+      expect(onValidityChangeCalls.length).toBe(1)
+      expect(onValidityChangeCalls[0][0]).toBe(true)
+    })
+  })
+
+  describe('Validating an invalid unvalidated textfield value', () => {
+    let wrapper = null
+    let helperText = null
+    let onValidityChange = null
+
+    beforeEach(() => {
+      helperText = 'error-message'
+      onValidityChange = jest.fn()
+
+      wrapper = shallow(<ValidationTextField
+        helperText={null}
+        onValidation={()=>{}}
+        onValidityChange={onValidityChange} />)
+
+      wrapper.setProps({ helperText })
+    })
+
+    it('should display the error message', () => {
+      expect(wrapper.props().helperText).toBe(helperText)
+    })
+
+    it('should not mark the textfield as invalid', () => {
+      expect(wrapper.props().error).toBe(true)
+    })
+
+    it('should invoke the onValidityChange prop indicating that the value is invalid', () => {
+      const onValidityChangeCalls = onValidityChange.mock.calls
+      expect(onValidityChangeCalls.length).toBe(1)
+      expect(onValidityChangeCalls[0][0]).toBe(false)
     })
   })
 })

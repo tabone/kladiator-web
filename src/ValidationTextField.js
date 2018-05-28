@@ -2,17 +2,25 @@ import React, { PureComponent } from 'react'
 import PropTypes from 'prop-types'
 import TextField from '@material-ui/core/TextField'
 
+export const VALIDITY_VALID = Symbol('VALIDITY_VALID')
+
 export default class ValidationTextField extends PureComponent {
   constructor (props) {
     super(props)
 
-    this.state = {
-      didBlur: false,
-      errorMessage: null
-    }
+    this.state = { didBlur: false }
 
     this.onBlur = this.onBlur.bind(this)
     this.onChange = this.onChange.bind(this)
+  }
+
+  get helperText () {
+    const { helperText } = this.props
+    return this.isHelperTextValid(helperText) === true ? null : helperText
+  }
+
+  componentDidUpdate (...args) {
+    this.onHelperTextChange(...args)
   }
 
   render () {
@@ -21,7 +29,7 @@ export default class ValidationTextField extends PureComponent {
       onBlur,
       onChange,
       helperText,
-      validation,
+      onValidation,
       onValidityChange,
       ...props
     } = this.props
@@ -30,14 +38,14 @@ export default class ValidationTextField extends PureComponent {
       <TextField {...props}
         onBlur={this.onBlur}
         onChange={this.onChange}
-        helperText={this.state.errorMessage}
+        helperText={this.helperText}
         error={this.isTextFieldValid() === false} />
     )
   }
 
   onBlur (...args) {
     if (this.state.didBlur === false) {
-      this.validate(this.props.value)
+      this.props.onValidation(this.props.value)
       this.setState({ didBlur: true })
     }
 
@@ -45,37 +53,28 @@ export default class ValidationTextField extends PureComponent {
   }
 
   onChange (e, ...args) {
-    if (this.state.didBlur === true) this.validate(e.target.value)
+    if (this.state.didBlur === true) this.props.onValidation(e.target.value)
     if (this.props.onChange != null) this.props.onChange(e, ...args)
   }
 
-  isTextFieldValid () {
-    return this.isErrorMessageValid(this.state.errorMessage)
-  }
+  onHelperTextChange (prevProps, prevState) {
+    if (this.props.onValidityChange == null) return
+    if (prevProps.helperText === this.props.helperText) return
 
-  isErrorMessageValid (message) {
-    return message === null
-  }
+    const wasTextFieldValid = this.isHelperTextValid(prevProps.helperText)
+    const isTextFieldValid = this.isHelperTextValid(this.props.helperText)
 
-  validate (value) {
-    const currentErrorMessage = this.state.errorMessage
-    const newErrorMessage = this.props.validation(value)
-
-    if (this.props.onValidityChange != null) {
-      const isFirstBlur = this.state.didBlur === false
-
-      const isErrorMessageChanging = currentErrorMessage !== newErrorMessage
-      const isTextFieldValid = this.isErrorMessageValid(currentErrorMessage)
-      const willTextFieldBeValid = this.isErrorMessageValid(newErrorMessage)
-      const willValidityChange = isErrorMessageChanging &&
-        (isTextFieldValid || willTextFieldBeValid)
-
-      if (isFirstBlur || willValidityChange) {
-        this.props.onValidityChange(willTextFieldBeValid)
-      }
+    if (wasTextFieldValid || isTextFieldValid) {
+      this.props.onValidityChange(isTextFieldValid)
     }
+  }
 
-    this.setState({ errorMessage: newErrorMessage })
+  isTextFieldValid () {
+    return this.isHelperTextValid(this.props.helperText)
+  }
+
+  isHelperTextValid (helperText) {
+    return helperText === VALIDITY_VALID || helperText === null
   }
 }
 
@@ -83,5 +82,10 @@ ValidationTextField.propTypes = {
   onBlur: PropTypes.func,
   onChange: PropTypes.func,
   onValidityChange: PropTypes.func,
-  validation: PropTypes.func.isRequired
+  onValidation: PropTypes.func.isRequired,
+  helperText: PropTypes.oneOfType([ PropTypes.string, PropTypes.symbol ])
+}
+
+ValidationTextField.defaultProps = {
+  helperText: null
 }
