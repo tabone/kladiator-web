@@ -337,7 +337,7 @@ describe('ValidationTextField Component', () => {
       expect(wrapper.props().helperText).toBe(helperText)
     })
 
-    it('should not mark the textfield as invalid', () => {
+    it('should mark the textfield as invalid', () => {
       expect(wrapper.props().error).toBe(true)
     })
 

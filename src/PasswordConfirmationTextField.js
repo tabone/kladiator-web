@@ -37,7 +37,11 @@ export default class PasswordConfirmationTextField extends PureComponent {
 
   onPasswordChange (prevProps) {
     if (prevProps.password === this.props.password) return
+
+    // Condition for not marking the password confirmation as wrong before the
+    // user tries to enter the password confirmation.
     if (this.state.helperText === null) return
+
     this.onValidation(this.props.value)
   }
 }

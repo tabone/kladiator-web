@@ -47,7 +47,7 @@ describe('PasswordConfirmationTextField Component', () => {
       wrapper.update()
     })
 
-    it('should indicate that it is valid', () => {
+    it('should return a message indicating the reason why it is invalid', () => {
       expect(wrapper.props().helperText)
         .toBe(PASSWORD_CONFIRMATION_MISMATCH_ERR)
     })
@@ -76,6 +76,7 @@ describe('PasswordConfirmationTextField Component', () => {
 
     beforeEach(() => {
       const confirmationPassword = 'abc123'
+
       wrapper = shallow(<PasswordConfirmationTextField
         value={confirmationPassword}
         password={`${confirmationPassword}-invalid`} />)
@@ -97,6 +98,7 @@ describe('PasswordConfirmationTextField Component', () => {
 
     beforeEach(() => {
       const confirmationPassword = 'abc123'
+
       wrapper = shallow(<PasswordConfirmationTextField
         value={confirmationPassword}
         password={confirmationPassword}/>)
