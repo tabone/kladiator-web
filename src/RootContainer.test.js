@@ -1,12 +1,12 @@
 import React from 'react'
 import { shallow } from 'enzyme'
-import thunk from 'redux-thunk'
 import configureStore from 'redux-mock-store'
 import { Map } from 'immutable'
 import loginThunk from './thunks/login'
+import Root from './Root'
 import RootContainer from './RootContainer'
 
-const mockStore = configureStore([ thunk ])
+const mockStore = configureStore()
 
 jest.mock('./thunks/login', () => {
   return jest.fn().mockImplementation((...args) => {
@@ -26,6 +26,10 @@ describe('Root Container Component', () => {
     it('should set the isLoggedIn prop to false', () => {
       expect(wrapper.props().isLoggedIn).toBe(false)
     })
+
+    it('should render the Root component', () => {
+      expect(wrapper.is(Root)).toBe(true)
+    })
   })
 
   describe('Rendering component when user is logged in', () => {
@@ -38,6 +42,10 @@ describe('Root Container Component', () => {
 
     it('should set the isLoggedIn prop to true', () => {
       expect(wrapper.props().isLoggedIn).toBe(true)
+    })
+
+    it('should render the Root component', () => {
+      expect(wrapper.is(Root)).toBe(true)
     })
   })
 
