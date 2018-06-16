@@ -4,7 +4,6 @@ import { Link } from 'react-router-dom'
 import Grid from '@material-ui/core/Grid'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-import { setupHandlers } from './utils/index'
 import EmailTextField from './EmailTextField'
 import UsernameTextField from './UsernameTextField'
 import PasswordTextField from './PasswordTextField'
@@ -44,19 +43,25 @@ class Register extends PureComponent {
       isPasswordConfirmationValid: false
     }
 
-    this.onValidityChange = setupHandlers([
+    this.onValidityChange = [
       'email',
       'username',
       'password',
       'passwordConfirmation'
-    ], this.onValidityChange, this)
+    ].reduce((handlers, field) => {
+      handlers[field] = this.onValidityChange.bind(this, field)
+      return handlers
+    }, {})
 
-    this.handleTextFieldChange = setupHandlers([
+    this.handleTextFieldChange = [
       'email',
       'username',
       'password',
       'passwordConfirmation'
-    ], this.handleTextFieldChange, this)
+    ].reduce((handlers, field) => {
+      handlers[field] = this.handleTextFieldChange.bind(this, field)
+      return handlers
+    }, {})
   }
 
   render () {
