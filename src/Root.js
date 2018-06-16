@@ -1,5 +1,6 @@
-import React, { PureComponent } from 'react'
+import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
+import { BrowserRouter } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar'
 import { AuthError } from './thunks/login'
@@ -30,28 +31,33 @@ export default class Root extends PureComponent {
 
   render () {
     if (this.state.showLoading === true) return <div><Loading /></div>
-    if (this.props.isLoggedIn === true) return <div><App /></div>
+
+    if (this.props.isLoggedIn === true) {
+      return <BrowserRouter><App /></BrowserRouter>
+    }
 
     return (
-      <div>
-        <Guest />
+      <BrowserRouter>
+        <Fragment>
+          <Guest />
 
-        <Snackbar
-          open={this.state.authenticationError !== null}
-          message={this.state.authenticationError}
-          autoHideDuration={3500}
-          onClose={this.handleSnackBarClose}
-          action={[
-            <Button
-              key='close'
-              color='secondary'
-              size='small'
-              onClick={this.handleSnackBarClose}>
-              Close
-            </Button>
-          ]}
-        />
-      </div>
+          <Snackbar
+            open={this.state.authenticationError !== null}
+            message={this.state.authenticationError}
+            autoHideDuration={3500}
+            onClose={this.handleSnackBarClose}
+            action={[
+              <Button
+                key='close'
+                color='secondary'
+                size='small'
+                onClick={this.handleSnackBarClose}>
+                Close
+              </Button>
+            ]}
+          />
+        </Fragment>
+      </BrowserRouter>
     )
   }
 

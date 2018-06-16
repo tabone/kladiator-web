@@ -1,11 +1,9 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { shallow } from 'enzyme'
 import Guest from './Guest'
 
 describe('Guest Component', () => {
   it('renders without crashing', () => {
-    const div = document.createElement('div')
-    ReactDOM.render(<Guest />, div)
-    ReactDOM.unmountComponentAtNode(div)
+    shallow(<Guest />)
   })
 })
