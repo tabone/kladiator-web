@@ -25,7 +25,7 @@ describe('ForgotPassword Component', () => {
       wrapper = shallow(<ForgotPassword />).dive()
     })
 
-    it('should display an empty Email TextField', () => {
+    it('should display an empty email TextField', () => {
       expect(getTextField(wrapper, 'email').props().value).toBe('')
     })
 
@@ -49,7 +49,7 @@ describe('ForgotPassword Component', () => {
       expect(wrapper.state('email')).toBe(value)
     })
 
-    it('should display the entered email inside the Email TextField', () => {
+    it('should display the entered email inside the email TextField', () => {
       expect(getTextField(wrapper, 'email').props().value).toBe(value)
     })
   })
@@ -63,7 +63,7 @@ describe('ForgotPassword Component', () => {
       wrapper.update()
     })
 
-    it('should enable the user to submit the form', () => {
+    it('should allow the user to submit the form', () => {
       expect(getButton(wrapper, 'submit').props().disabled).toBe(false)
     })
   })
@@ -77,7 +77,7 @@ describe('ForgotPassword Component', () => {
       wrapper.update()
     })
 
-    it('should enable the user to submit the form', () => {
+    it('should not allow the user to submit the form', () => {
       expect(getButton(wrapper, 'submit').props().disabled).toBe(true)
     })
   })

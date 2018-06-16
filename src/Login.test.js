@@ -81,7 +81,7 @@ describe('Login Component', () => {
     let wrapper = null
 
     beforeEach(() => {
-      wrapper = shallow(<Login  login={()=>{}} />).dive()
+      wrapper = shallow(<Login login={()=>{}} />).dive()
 
       ;[ 'username' , 'password' ].forEach(field => {
         getTextField(wrapper, field).props().onValidityChange(true)
@@ -99,7 +99,7 @@ describe('Login Component', () => {
     let wrapper = null
 
     beforeEach(() => {
-      wrapper = shallow(<Login  login={()=>{}} />).dive()
+      wrapper = shallow(<Login login={()=>{}} />).dive()
     })
 
     describe('when one of the fields is invalid', () => {

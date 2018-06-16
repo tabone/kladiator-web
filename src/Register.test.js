@@ -101,6 +101,11 @@ describe('Register Component', () => {
       expect(wrapper.state('password')).toBe(value)
     })
 
+    it('should provide the entered password to the password confirmation TextField', () => {
+      expect(getTextField(wrapper, 'password-confirmation').props().password)
+        .toBe(value)
+    })
+
     it('should display the entered password in the password TextField', () => {
       expect(getTextField(wrapper, 'password').props().value).toBe(value)
     })

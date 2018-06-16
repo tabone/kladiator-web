@@ -101,8 +101,7 @@ class Login extends PureComponent {
           <Grid item={true} className={classes.appLoginForgotPassword}>
             <Button
               component={Link}
-              to='/forgot-password'
-              className='app-login__to-forgot-password-button'>
+              to='/forgot-password'>
               Forgot your password?
             </Button>
           </Grid>
@@ -125,8 +124,7 @@ class Login extends PureComponent {
               fullWidth={true}
               variant='raised'
               component={Link}
-              color='secondary'
-              className='app-login__to-register-button' >
+              color='secondary'>
               Register
             </Button>
           </Grid>

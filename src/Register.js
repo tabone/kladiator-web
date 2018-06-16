@@ -77,7 +77,9 @@ class Register extends PureComponent {
         </Grid>
 
         <Grid item={true}>
-          <Typography variant='title' align='center'>Join Our Community!</Typography>
+          <Typography variant='title' align='center'>
+            Join Our Community!
+          </Typography>
         </Grid>
 
         <Grid container={true} item={true} direction='column' spacing={16}>
@@ -146,8 +148,7 @@ class Register extends PureComponent {
             <Button
               to='/'
               fullWidth={true}
-              component={Link}
-              className='app-register__to-login-button'>
+              component={Link}>
               Back to login
             </Button>
           </Grid>

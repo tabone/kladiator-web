@@ -34,7 +34,6 @@ describe('LoginContainer Component', () => {
     beforeEach(() => {
       store = mockStore()
       wrapper = shallow(<LoginContainer />, { context: { store }})
-
       wrapper.props().login()
     })
 

@@ -45,7 +45,9 @@ class ForgotPassword extends PureComponent {
 
         <Grid container={true} item={true} direction='column' spacing={16}>
           <Grid item={true}>
-            <Typography variant='title' align='center'>Forgot your password?</Typography>
+            <Typography variant='title' align='center'>
+              Forgot your password?
+            </Typography>
           </Grid>
 
           <Grid item={true}>
@@ -82,8 +84,7 @@ class ForgotPassword extends PureComponent {
             <Button
               to='/'
               fullWidth={true}
-              component={Link}
-              className='app-forgot-password__to-login-button'>
+              component={Link}>
               Back to login
             </Button>
           </Grid>
