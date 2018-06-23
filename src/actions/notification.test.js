@@ -4,13 +4,9 @@ import * as actionCreator from './notification'
 describe('Notification Action Creator', () => {
   it('should create an action to push a new notification', () => {
     const notification = {
-      duration: 1000,
-      actions: [ {
-        name: 'action-one'
-      }, {
-        name: 'action-two'
-      } ],
-      message: 'notification-message'
+      autoHideDuration: 1000,
+      message: 'notification-message',
+      actions: [ { name: 'action-one' }, { name: 'action-two' } ]
     }
 
     const action = actionCreator.addNotification(notification)

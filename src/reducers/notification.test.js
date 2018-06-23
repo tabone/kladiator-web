@@ -11,15 +11,15 @@ describe('Notification Reducer', () => {
 
   it('should handle NOTIFICATION_ADD actions', () => {
     const noteOne = {
-      duration: 2000,
-      actions: [ { name: 'action-one-one' }, { name: 'action-one-two' } ],
-      message: 'message-one'
+      autoHideDuration: 2000,
+      message: 'message-one',
+      actions: [ { name: 'action-one-one' }, { name: 'action-one-two' } ]
     }
 
     const noteTwo = {
-      duration: 1000,
-      actions: [ { name: 'action-two-one' }, { name: 'action-two-two' } ],
-      message: 'message-two'
+      autoHideDuration: 1000,
+      message: 'message-two',
+      actions: [ { name: 'action-two-one' }, { name: 'action-two-two' } ]
     }
 
     let state = reducer(undefined, actionCreator.addNotification(noteOne))
@@ -30,15 +30,15 @@ describe('Notification Reducer', () => {
 
   fit('should handle NOTIFICATION_REMOVE actions', () => {
     const noteOne = {
-      duration: 2000,
-      actions: [ { name: 'action-one-one' }, { name: 'action-one-two' } ],
-      message: 'message-one'
+      autoHideDuration: 2000,
+      message: 'message-one',
+      actions: [ { name: 'action-one-one' }, { name: 'action-one-two' } ]
     }
 
     const noteTwo = {
-      duration: 1000,
-      actions: [ { name: 'action-two-one' }, { name: 'action-two-two' } ],
-      message: 'message-two'
+      autoHideDuration: 1000,
+      message: 'message-two',
+      actions: [ { name: 'action-two-one' }, { name: 'action-two-two' } ]
     }
 
     let state = reducer(undefined, actionCreator.addNotification(noteOne))
