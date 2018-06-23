@@ -28,7 +28,7 @@ describe('Notification Reducer', () => {
     expect(state.equals(fromJS([ noteOne, noteTwo ]))).toBe(true)
   })
 
-  fit('should handle NOTIFICATION_REMOVE actions', () => {
+  it('should handle NOTIFICATION_REMOVE actions', () => {
     const noteOne = {
       autoHideDuration: 2000,
       message: 'message-one',
