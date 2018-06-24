@@ -59,7 +59,7 @@ describe('NotificationContainer component', () => {
       wrapper.props().removeNotification()
     })
 
-    it('should dispatch an NOTIFICATION_REMOVE action to the store to remove the current visible notification', () => {
+    it('should dispatch a NOTIFICATION_REMOVE action to the store to remove the current visible notification', () => {
       const actions = store.getActions()
       expect(actions.length).toBe(1)
       expect(actions[0].type).toBe(NOTIFICATION_REMOVE)
