@@ -2,8 +2,9 @@ import React, { PureComponent, Fragment } from 'react'
 import PropTypes from 'prop-types'
 import { BrowserRouter } from 'react-router-dom'
 import Button from '@material-ui/core/Button'
-import Snackbar from '@material-ui/core/Snackbar'
 import { AuthError } from './thunks/login'
+import NotificationContainer from './NotificationContainer'
+import { DELAY_LONG } from './Notification'
 import Loading from './Loading'
 import Guest from './Guest'
 import App from './App'
@@ -12,12 +13,7 @@ export default class Root extends PureComponent {
   constructor (props) {
     super(props)
 
-    this.state = {
-      authenticationError: null,
-      showLoading: !this.props.isLoggedIn
-    }
-
-    this.handleSnackBarClose = this.handleSnackBarClose.bind(this)
+    this.state = { showLoading: !this.props.isLoggedIn }
 
     this._ = { promises: { authenticateUser: null } }
   }
@@ -32,52 +28,43 @@ export default class Root extends PureComponent {
   render () {
     if (this.state.showLoading === true) return <div><Loading /></div>
 
-    if (this.props.isLoggedIn === true) {
-      return <BrowserRouter><App /></BrowserRouter>
-    }
-
     return (
       <BrowserRouter>
         <Fragment>
-          <Guest />
+          { this.props.isLoggedIn === true ? <App /> : <Guest /> }
 
-          <Snackbar
-            open={this.state.authenticationError !== null}
-            message={this.state.authenticationError}
-            autoHideDuration={3500}
-            onClose={this.handleSnackBarClose}
-            action={[
-              <Button
-                key='close'
-                color='secondary'
-                size='small'
-                onClick={this.handleSnackBarClose}>
-                Close
-              </Button>
-            ]}
-          />
+          <NotificationContainer />
         </Fragment>
       </BrowserRouter>
     )
   }
 
   login () {
-    const newState = { showLoading: false }
-
     return this.props.login().catch(err => {
       if (err instanceof AuthError) return
-      newState.authenticationError = 'An error occurred during authentication'
-    }).then(() => this.setState(newState))
-  }
 
-  handleSnackBarClose () {
-    this.setState({ authenticationError: null })
+      this.props.addNotification({
+        autoHideDuration: DELAY_LONG,
+        message: 'An error occurred during authentication',
+        action: [
+          <Button
+            key='close'
+            color='secondary'
+            size='small'
+            onClick={this.props.removeNotification}>
+            Close
+          </Button>
+        ]
+      })
+    }).then(() => this.setState({ showLoading: false }))
   }
 }
 
 Root.propTypes = {
   isLoggedIn: PropTypes.bool,
-  login: PropTypes.func.isRequired
+  login: PropTypes.func.isRequired,
+  addNotification: PropTypes.func.isRequired,
+  removeNotification: PropTypes.func.isRequired
 }
 
 Root.defaultProps = { isLoggedIn: false }

@@ -2,9 +2,9 @@ import React from 'react'
 import { shallow } from 'enzyme'
 import configureStore from 'redux-mock-store'
 import { Map } from 'immutable'
-import loginThunk from './thunks/login'
 import Root from './Root'
 import RootContainer from './RootContainer'
+import { NOTIFICATION_ADD, NOTIFICATION_REMOVE } from './actions/notification'
 
 const mockStore = configureStore()
 
@@ -65,6 +65,38 @@ describe('Root Container Component', () => {
       const action = store.getActions()[0]
       expect(action.type).toBe('loginThunk')
       expect(action.args.length).toBe(0)
+    })
+  })
+
+  describe('Showing a notification', () => {
+    let store = null
+    let wrapper = null
+
+    beforeEach(() => {
+      store = mockStore({ session: Map() })
+      wrapper = shallow(<RootContainer />, { context: { store } })
+      wrapper.props().addNotification()
+    })
+
+    it('should dispatch an NOTIFICATION_ADD action to the store', () => {
+      expect(store.getActions().length).toBe(1)
+      expect(store.getActions()[0].type).toBe(NOTIFICATION_ADD)
+    })
+  })
+
+  describe('Removing a notification', () => {
+    let store = null
+    let wrapper = null
+
+    beforeEach(() => {
+      store = mockStore({ session: Map() })
+      wrapper = shallow(<RootContainer />, { context: { store } })
+      wrapper.props().removeNotification()
+    })
+
+    it('should dispatch a NOTIFICATION_REMOVE action to the store', () => {
+      expect(store.getActions().length).toBe(1)
+      expect(store.getActions()[0].type).toBe(NOTIFICATION_REMOVE)
     })
   })
 })
