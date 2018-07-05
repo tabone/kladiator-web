@@ -10,10 +10,9 @@ const mockStore = configureStore()
 describe('FABContainer Component', () => {
   describe('Rendering the component', () => {
     let wrapper = null
-    let fabActions = null
 
     beforeEach(() => {
-      fabActions = Map({
+      const fabActions = Map({
         'key-one': Map({ icon: 'one' }),
         'key-two': Map({ icon: 'two' }),
         'key-three': Map({ icon: 'three' })
