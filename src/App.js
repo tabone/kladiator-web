@@ -6,7 +6,7 @@ import FABContainer from './FABContainer'
 import AlertsPage from './AlertsPage'
 import CalendarPage from './CalendarPage'
 import MessagesPage from './MessagesPage'
-import ProfilePage from './ProfilePage'
+import ProfilePageContainer from './ProfilePageContainer'
 
 const styles = () => {
   return {
@@ -31,7 +31,7 @@ class App extends Component {
     return (
       <div className={classes.appApp}>
         <div className={classes.appApp__content}>
-          <Route exact path='/' component={ProfilePage}/>
+          <Route exact path='/' component={ProfilePageContainer}/>
           <Route exact path='/calendar' component={CalendarPage}/>
           <Route exact path='/messages' component={MessagesPage}/>
           <Route exact path='/alerts' component={AlertsPage}/>
