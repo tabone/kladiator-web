@@ -29,7 +29,7 @@ class Loading extends Component {
     const { classes } = this.props
     return (
       <section className={classes.appLoading}>
-        <img src='images/loader.gif' width='40' alt='Loading image' />
+        <img src='images/loader.gif' width='40' alt='Loading' />
 
         <Typography
           className={classes.appLoading__message}
