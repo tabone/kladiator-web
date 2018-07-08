@@ -13,11 +13,12 @@ const styles = () => {
     appApp: {
       display: 'flex',
       flexDirection: 'column',
-      minHeight: '100vh'
+      height: '100vh'
     },
 
     appApp__content: {
       flex: 1,
+      overflow: 'scroll',
       position: 'relative'
     }
   }
