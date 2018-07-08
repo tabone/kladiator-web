@@ -1,6 +1,8 @@
 import React, { PureComponent } from 'react'
+import PropTypes from 'prop-types'
 import { withStyles } from '@material-ui/core/styles'
 import Chart from 'chart.js'
+import Tooltip from '@material-ui/core/Tooltip'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
 import ListSubheader from '@material-ui/core/ListSubheader'
@@ -26,7 +28,7 @@ const styles = theme => {
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      padding: '18px',
+      padding: '18px 0',
     },
 
     appProfile__details: {
@@ -104,6 +106,7 @@ const styles = theme => {
       display: 'flex',
       justifyContent: 'space-between',
       width: '100%',
+      padding: '0 18px',
       marginBottom: '11px'
     },
 
@@ -112,8 +115,12 @@ const styles = theme => {
       maxHeight: '50px'
     },
 
-    appProfile__performance: {
+    appProfile__stats: {
       width: '100%'
+    },
+
+    appProfile__statsChart: {
+      padding: '0 18px'
     }
   }
 }
@@ -126,31 +133,33 @@ class ProfilePage extends PureComponent {
   }
 
   componentDidMount () {
+    this.setupChart()
+  }
+
+  setupChart () {
+    const info = this.props.statistics.reduce((info, stat) => {
+      info.data.push(stat.hours)
+      info.labels.push(stat.month)
+      return info
+    }, { labels: [], data: [] })
+
     var myChart = new Chart(this.canvasElement.current, {
       type: 'bar',
       data: {
-        labels: [ 7, 8, 9, 10, 11, 0, 1, 2, 3, 4, 5, 6 ],
+        labels: info.labels,
         datasets: [{
           label: 'Hours',
-          data: [1, 0, 13, 14, 13, 16, 17, 17, 20, 16, 17, 17],
+          data: info.data,
           backgroundColor: '#009688'
         }]
       },
       options: {
-        legend: {
-          display: false
-        },
+        legend: { display: false },
         scales: {
+          yAxes: [{ display: false }],
           xAxes: [{
-            ticks: {
-              callback: value => months[value].shortName
-            },
-            gridLines: {
-              display: false
-            }
-          }],
-          yAxes: [{
-            display: false
+            gridLines: { display: false },
+            ticks: { callback: value => months[value].shortName }
           }]
         },
         tooltips: {
@@ -165,29 +174,62 @@ class ProfilePage extends PureComponent {
   }
 
   render () {
-    const { classes } = this.props
+    const {
+      name,
+      image,
+      classes,
+      followers,
+      following,
+      description
+    } = this.props
+
+    const badges = this.props.badges.map(badge => {
+      return (
+        <Tooltip title={badge.name} key={`badge-${badge.id}`}>
+          <img
+            alt={badge.name}
+            src={badge.image}
+            className={classes.appProfile__badgesBadge} />
+        </Tooltip>
+      )
+    })
 
     return (
       <div className={classes.appProfile}>
         <header className={classes.appProfile__details}>
           <div className={classes.appProfile__detailsRespectGauge}>
-            <img src='images/logo.png'
-              className={classes.appProfile__detailsImage} alt='User Profile' />
+            <img
+              src={image}
+              alt='User Profile'
+              className={classes.appProfile__detailsImage} />
           </div>
 
           <Typography variant='headline'
-            className={classes.appProfile__detailsUsername}>Tyrion</Typography>
+            className={classes.appProfile__detailsUsername}>
+            {name}
+            </Typography>
 
           <Typography variant='caption'
             className={classes.appProfile__detailsDescription}>
-            i drink and i know things...
+            {description}
           </Typography>
         </header>
 
         <section className={classes.appProfile__social}>
           <div className={classes.appProfile__socialActions}>
-            <Button variant='raised' color='primary' className={classes.appProfile__socialAction}>Follow</Button>
-            <Button variant='raised' color='primary' className={classes.appProfile__socialAction}>Message</Button>
+            <Button
+              className={classes.appProfile__socialAction}
+              variant='raised'
+              color='primary'>
+              Follow
+            </Button>
+
+            <Button
+              className={classes.appProfile__socialAction}
+              variant='raised'
+              color='primary'>
+              Message
+            </Button>
           </div>
 
           <div className={classes.appProfile__socialInfo}>
@@ -201,7 +243,7 @@ class ProfilePage extends PureComponent {
               <Typography
                 variant='display1'
                 className={classes.appProfile__socialInfoSectionValue}>
-                361
+                {following}
               </Typography>
             </div>
 
@@ -215,27 +257,40 @@ class ProfilePage extends PureComponent {
               <Typography
                 variant='display1'
                 className={classes.appProfile__socialInfoSectionValue}>
-                250
+                {followers}
               </Typography>
             </div>
           </div>
         </section>
 
-        <section className={classes.appProfile__badges}>
-          <img src='images/logo.png' className={classes.appProfile__badgesBadge} alt='Badge Name'/>
-          <img src='images/happy.png' className={classes.appProfile__badgesBadge} alt='Badge Name'/>
-          <img src='images/surprised.png' className={classes.appProfile__badgesBadge} alt='Badge Name'/>
-          <img src='images/logo.png' className={classes.appProfile__badgesBadge} alt='Badge Name'/>
-          <img src='images/happy.png' className={classes.appProfile__badgesBadge} alt='Badge Name'/>
-        </section>
+        <section className={classes.appProfile__badges}>{badges}</section>
 
-        <section className={classes.appProfile__performance}>
-          <ListSubheader component='div'>Hours</ListSubheader>
-          <canvas ref={this.canvasElement}></canvas>
+        <section className={classes.appProfile__stats}>
+          <ListSubheader component='div'>Statistics</ListSubheader>
+          <canvas
+            ref={this.canvasElement}
+            className={classes.appProfile__statsChart}>
+          </canvas>
         </section>
       </div>
     )
   }
+}
+
+ProfilePage.propTypes = {
+  name: PropTypes.string.isRequired,
+  image: PropTypes.string.isRequired,
+  description: PropTypes.string.isRequired,
+  following: PropTypes.number.isRequired,
+  followers: PropTypes.number.isRequired,
+  statistics: PropTypes.arrayOf(PropTypes.shape({
+    month: PropTypes.number.isRequired,
+    hours: PropTypes.number.isRequired
+  })),
+  badges: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    image: PropTypes.string.isRequired
+  }))
 }
 
 export default withStyles(styles)(ProfilePage)
