@@ -8,9 +8,9 @@ export default class Guest extends Component {
   render () {
     return (
       <Switch>
-        <Route path='/' exact={true} component={ LoginContainer } />
         <Route path='/register' component={ RegisterContainer } />
         <Route path='/forgot-password' component={ ForgotPasswordContainer } />
+        <Route component={ LoginContainer } />
       </Switch>
     )
   }
