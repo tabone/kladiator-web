@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
-import { Route } from 'react-router-dom'
+import { Route, RouterContext } from 'react-router-dom'
 import BottomNavigation from './BottomNavigation'
 import FABContainer from './FABContainer'
 import AlertsPage from './AlertsPage'
@@ -39,7 +39,16 @@ class App extends Component {
           <FABContainer />
         </div>
 
-        <BottomNavigation />
+        <RouterContext.Consumer>
+          {
+            ({ router }) => {
+              return <BottomNavigation
+                history={router.history}
+                pathname={router.route.location.pathname} />
+            }
+          }
+        </RouterContext.Consumer>
+
       </div>
     )
   }
